@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<style>
+    #userData {
+        float:left;
+        width:50%; 
+    }
+
+    #dataToJson {
+        float:right;
+        width:50%;
+    }
+
+</style>
+
+<body>
+    <div id="inputArea">
+        <div id="userData">
+            <textarea rows="20" cols="90" id="rawData">
+    1.标题:北京师范大学现代远程教育2017年秋季辅导班
+    链接:https://qilitech.cn/activities-view?activitiesId=b2434bb2cd2f4b2e988e3102aaecb50b
+    描述：学院坚持依法办学、从严治院，将“守正出新、慎思笃行”立为院训，形成了严谨的教学风格。
+            </textarea>
+        </div>
+
+        <div id="dataToJson">
+            <textarea rows="20" cols="90" id="myData"></textarea>
+        </div>
+    </div>
+
+    <div id="btnArea">
+        <input type="button" id="getIt" value="生成Json">
+    </div>
+    <script>
+        'use strict';
+        document.querySelector('#getIt').onclick = function() {
+            let topic = '';
+            let desUrl = '';
+            let desc = '';
+            let id = '';
+            let type = '';
+            let link = '';
+
+            // 从输入框中获取主题、链接和描述
+            let rawData = document.querySelector('#rawData').value;
+            let topicRegArr = rawData.match(/标题(:|：)(.*)\n/);
+            let desUrlRegArr = rawData.match(/链接(:|：)(.*)\n/);
+            let descRegArr = rawData.match(/描述(:|：)(.*)\n/);
+
+            if(topicRegArr) {
+                topic = topicRegArr[2];
+            }
+
+            if(desUrlRegArr) {
+                desUrl = desUrlRegArr[2];
+            }
+
+            if(descRegArr) {
+                desc = descRegArr[2];
+            }
+
+            /**
+                文档 doc   doc/view?newsId=
+                视频 video  video/view?newsId=
+                活动 activities  activitiesId=
+                方案包 solution solutionId=
+                其他 url
+            */
+
+            let splitArr = [
+                'doc\/view\?newsId=',
+                'video\/view\?newsId=',
+                'activitiesId=',
+                'solutionId='
+            ];
+
+            let typeBox = [
+                'doc',
+                'video',
+                'activities',
+                'solution'
+            ];
+
+            // 通过链接字符串判断type和id，或者通过url跳转
+            for(let i = 0; i < splitArr.length; i++) {
+                let splitStr = splitArr[i];
+                let tmp = desUrl.split(splitStr);
+
+                if(tmp.length > 1) {
+                    id = tmp[1];
+                    type = typeBox[i];
+                    break;
+                }
+            }
+
+            if(type === '') {
+                link = desUrl;
+            }
+
+            let desStr = `
+                {
+                    "topic": "${topic}",
+                    "id": "${id}",
+                    "type": "${type}",
+                    "link": "${link}",
+                    "desc": "${desc}"
+                },
+            `;
+
+            document.querySelector('#myData').innerHTML = `${desStr}`;
+        }
+    </script>
+</body>
+</html>
