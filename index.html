@@ -47,6 +47,8 @@
             let rawData = document.querySelector('#rawData').value;
             let regDataArr = rawData.match(/标题(:|：)(.*)\n\s*链接(:|：)(.*)\n\s*描述(:|：)(.*)\n/g);// \s* 多个空白符
             
+            console.log(regDataArr);
+
             // 找不到匹配条目
             if (regDataArr.length <= 0) {
                 return;   
@@ -55,7 +57,7 @@
             // 从每个信息块中解析出所需的JSON串
             for(let i = 0; i < regDataArr.length; i++) {
                 let entryData = regDataArr[i]; //获取包含标题、链接、描述的单个信息块
-                let regData = entryData.match(/标题(:|：)(.*)\n\s*链接(:|：)(.*)\n\s*描述(:|：)(.*)\n/);//通过捕获获取标题、链接、描述三个字符串
+                let regData = entryData.match(/标题(:|：)(.*)\n\s*链接(:|：)(.*)\n\s*描述(:|：)(.*)(\n|$)/);//通过捕获获取标题、链接、描述三个字符串
                  
                 let topic = '';
                 let desUrl = '';
