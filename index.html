@@ -45,9 +45,7 @@
 
             // 从输入框中获取主题、链接和描述的原生字符串
             let rawData = document.querySelector('#rawData').value;
-            let regDataArr = rawData.match(/标题(:|：)(.*)\n\s*链接(:|：)(.*)\n\s*描述(:|：)(.*)\n/g);// \s* 多个空白符
-            
-            console.log(regDataArr);
+            let regDataArr = rawData.match(/标题(:|：)(.*)\n\s*链接(:|：)(.*)\n\s*描述(:|：)(.*)(\n|$)/g);// \s* 多个空白符
 
             // 找不到匹配条目
             if (regDataArr.length <= 0) {
