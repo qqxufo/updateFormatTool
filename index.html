@@ -40,31 +40,45 @@
     <script>
         'use strict';
         document.querySelector('#getIt').onclick = function() {
-            let topic = '';
-            let desUrl = '';
-            let desc = '';
-            let id = '';
-            let type = '';
-            let link = '';
+            let desStr = '';
 
-            // 从输入框中获取主题、链接和描述
+            // 从输入框中获取主题、链接和描述的原生字符串
             let rawData = document.querySelector('#rawData').value;
-            let topicRegArr = rawData.match(/标题(:|：)(.*)\n/);
-            let desUrlRegArr = rawData.match(/链接(:|：)(.*)\n/);
-            let descRegArr = rawData.match(/描述(:|：)(.*)\n/);
+            let regDataArr = rawData.match(/标题(:|：)(.*)\n\s*链接(:|：)(.*)\n\s*描述(:|：)(.*)\n/g);// \s* 多个空白符
+            
+            // 找不到匹配条目
+            if (regDataArr.length <= 0) {
+                return;   
+            } 
 
-            if(topicRegArr) {
-                topic = topicRegArr[2];
+            for(let i = 0; i < regDataArr.length; i++) {
+                let entryData = regDataArr[i]; //获取包含标题、链接、描述的单个信息块
+                let regData = entryData.match(/标题(:|：)(.*)\n\s*链接(:|：)(.*)\n\s*描述(:|：)(.*)\n/);//通过捕获获取标题、链接、描述三个字符串
+                 
+                let topic = '';
+                let desUrl = '';
+                let desc = '';
+
+                if(regData) {
+                    topic = regData[2];
+                    desUrl = regData[4];
+                    desc = regData[6];
+                }
+
+                if(i != 0) {
+                    desStr += ',';
+                }
+
+                desStr += spliceType(topic, desc, desUrl);
             }
 
-            if(desUrlRegArr) {
-                desUrl = desUrlRegArr[2];
-            }
+            document.querySelector('#myData').innerHTML = `${desStr}`;
+        }
 
-            if(descRegArr) {
-                desc = descRegArr[2];
-            }
-
+        /** 
+            数据分离函数
+        */
+        function spliceType(topic, desc, desUrl) {
             /**
                 文档 doc   doc/view?newsId=
                 视频 video  video/view?newsId=
@@ -72,6 +86,10 @@
                 方案包 solution solutionId=
                 其他 url
             */
+
+            let id = '';
+            let type = '';
+            let link = '';
 
             let splitArr = [
                 'doc\/view\?newsId=',
@@ -93,8 +111,8 @@
                 let tmp = desUrl.split(splitStr);
 
                 if(tmp.length > 1) {
-                    id = tmp[1];
-                    type = typeBox[i];
+                    id = tmp[1]; //分割后第二部分为需要跳转的ID
+                    type = typeBox[i]; //通过typeBox里对应的下标获取跳转页面的类型
                     break;
                 }
             }
@@ -110,10 +128,9 @@
                     "type": "${type}",
                     "link": "${link}",
                     "desc": "${desc}"
-                },
-            `;
+                }`;
 
-            document.querySelector('#myData').innerHTML = `${desStr}`;
+            return desStr != '' ? desStr : '';
         }
     </script>
 </body>
